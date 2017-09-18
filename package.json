@@ -9,6 +9,7 @@
   "author": "Niels de Boer",
   "license": "ISC",
   "devDependencies": {
+    "array-sort": "^0.1.4",
     "colors": "^1.1.2",
     "officegen": "^0.4.5",
     "textract": "^2.2.0"

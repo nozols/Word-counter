@@ -11,5 +11,5 @@ npm install
 
 # usage
 ```
-npm index.js
+node index.js
 ```
