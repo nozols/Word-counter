@@ -1,0 +1,16 @@
+{
+  "name": "word-counter",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "exit 0"
+  },
+  "author": "Niels de Boer",
+  "license": "ISC",
+  "devDependencies": {
+    "colors": "^1.1.2",
+    "officegen": "^0.4.5",
+    "textract": "^2.2.0"
+  }
+}
