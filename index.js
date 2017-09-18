@@ -18,7 +18,7 @@ let xlsx = officegen({
 fs.readdir(fileLocation, (error, files) => {
   if(error){
     console.error(error);
-    console.error("An error occured when searching for files!");
+    console.error("An error occured when searching for files!".red.underline);
   }else{
     fileNames = files;
     onFilesLoaded();
@@ -49,21 +49,29 @@ function countFile(name){
 }
 
 function countText(name, text){
-  console.log("Counting text: " + name);
+  console.log("Counting text: ".uderline + name);
   fileResult[name] = {};
   let words = text.split(" ");
+  let result = {};
+  let sortedResult = [];
 
   for(let i = 0; i < words.length; i++){
-    if(fileResult[name][words[i]]){
-      fileResult[name][words[i]]++;
+    if(result[words[i]]){
+      result[words[i]]++;
     }else{
-      fileResult[name][words[i]] = 1;
+      result[words[i]] = 1;
     }
   }
 
-  fileResult[name].sort((a, b) => {
-    console.log(a, b);
-  })
+  for(let index in result){
+    sortedResult.push([index, result[index]]);
+  }
+
+  sortedResult.sort((a, b) => {
+    return b[1] - a[1];
+  });
+
+  fileResult[name] = sortedResult;
 
   readingFiles.splice(readingFiles.indexOf(name), 1);
   if(readingFiles.length == 0){
@@ -73,17 +81,16 @@ function countText(name, text){
 
 function dataToExcel(){
   let sheet = xlsx.makeNewSheet();
-  sheet.name = "words";
+  sheet.name = "Files";
 
   let xCoord = 0;
   for(var file in fileResult){
-    let yCoord = 0;
-    for(var index in fileResult[file]){
-      setSheetCoord(sheet, xCoord, yCoord, index);
-      setSheetCoord(sheet, xCoord + 1, yCoord, fileResult[file][index]);
-      yCoord++;
+    setSheetCoord(sheet, xCoord, 0, file);
+    for(let i = 0; i < fileResult[file].length; i++){
+      setSheetCoord(sheet, xCoord, i + 1, fileResult[file][i][0]);
+      setSheetCoord(sheet, xCoord + 1, i + 1, fileResult[file][i][1]);
     }
-    xCoord += 2;
+    xCoord += 3;
   }
 
   var out = fs.createWriteStream ( 'out.xlsx' );
