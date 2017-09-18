@@ -14,3 +14,11 @@ npm install
 ```
 node index.js
 ```
+
+## parameters
+```
+node index.js --excel=filename.xlsx
+```
+```
+node index.js --json=json.txt
+```
