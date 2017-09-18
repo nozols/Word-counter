@@ -1,5 +1,6 @@
 # Word-counter
-Counts words in .docx files
+Counts words in .docx files.
+Node.js is required to build and run this project.
 
 # Initialization
 ```

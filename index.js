@@ -9,6 +9,8 @@ console.log("Welcome to word counter!".green);
 let readingFiles = [];
 let fileNames = [];
 let fileResult = {};
+let globalResult = {};
+let globalTotal = [];
 let total = {};
 let xlsx = officegen({
   type: 'xlsx',
@@ -36,7 +38,7 @@ function onFilesLoaded(){
 }
 
 function countFile(name){
-  console.log("Counting file: "+name);
+  console.log("Counting file: " + name);
 
   textract.fromFileWithPath(fileLocation + '/' + name, (error, text) => {
     if(error){
@@ -49,17 +51,26 @@ function countFile(name){
 }
 
 function countText(name, text){
-  console.log("Counting text: ".uderline + name);
+  console.log("Counting text: " + name);
   fileResult[name] = {};
   let words = text.split(" ");
   let result = {};
   let sortedResult = [];
 
   for(let i = 0; i < words.length; i++){
+    words[i] = words[i].replace(/[^A-Za-z\s]/g, '');
+    if(words[i] == '' || words[i] == null){
+      continue;
+    }
     if(result[words[i]]){
       result[words[i]]++;
     }else{
       result[words[i]] = 1;
+    }
+    if(globalResult[words[i]]){
+      globalResult[words[i]]++;
+    }else{
+      globalResult[words[i]] = 1;
     }
   }
 
@@ -75,13 +86,24 @@ function countText(name, text){
 
   readingFiles.splice(readingFiles.indexOf(name), 1);
   if(readingFiles.length == 0){
+
+    for(let index in globalResult){
+      globalTotal.push([index, globalResult[index]]);
+    }
+
+    globalTotal.sort((a, b) => {
+      return b[1] - a[1];
+    });
+
     dataToExcel();
   }
 }
 
 function dataToExcel(){
   let sheet = xlsx.makeNewSheet();
+  let sheetAll = xlsx.makeNewSheet();
   sheet.name = "Files";
+  sheetAll.name = "All words";
 
   let xCoord = 0;
   for(var file in fileResult){
@@ -93,7 +115,14 @@ function dataToExcel(){
     xCoord += 3;
   }
 
-  var out = fs.createWriteStream ( 'out.xlsx' );
+  for(let i = 0; i < globalTotal.length; i++){
+    setSheetCoord(sheetAll, 0, i, globalTotal[i][0]);
+    setSheetCoord(sheetAll, 1, i, globalTotal[i][1]);
+  }
+
+  setSheetCoord(sheetAll, 4, 3, "Total words: " + globalTotal.length);
+
+  var out = fs.createWriteStream('out.xlsx');
   xlsx.generate(out);
 }
 
